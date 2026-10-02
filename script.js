@@ -3,8 +3,7 @@ window.onload = () => {
     addBlogPostBtn.addEventListener("click", addBlogPost)
 
     blogPosts.map((blog) => {
-        createBlogPost(blog.title, blog.content, id)
-        id++
+        createBlogPost(blog.title, blog.content)
     })
 }
 
@@ -27,16 +26,12 @@ const blogPosts = [
     }
 ]
 
-let id = 1
-
-const createBlogPost = (getTitle, getContent, id) => {
+const createBlogPost = (getTitle, getContent) => {
     // Get <ul> that stores the list of blog post
     const blogPostList = document.getElementById("blog-post")
 
     // Create <li> for storing the blog
     const blogPost = document.createElement("li")
-    const blogPostId = `blog-post-${id}`
-    blogPost.setAttribute("id", blogPostId)
 
     // Create <h3> for title
     const title = document.createElement("h3")
@@ -49,17 +44,17 @@ const createBlogPost = (getTitle, getContent, id) => {
     // Create edit blog post title <button>
     const editTitleBtn = document.createElement("button")
     editTitleBtn.textContent = "Edit Title"
-    editTitleBtn.addEventListener("click", () => editTitle(blogPostId))
+    editTitleBtn.addEventListener("click", e => editTitle(e.target.parentElement.parentElement))
 
     // Create edit blog post content <button>
     const editContentBtn = document.createElement("button")
     editContentBtn.textContent = "Edit Content"
-    editContentBtn.addEventListener("click", () => editContent(blogPostId))
+    editContentBtn.addEventListener("click", e => editContent(e.target.parentElement.parentElement))
 
     // Create delete blog post <button>
     const deleteBlogPostBtn = document.createElement("button")
     deleteBlogPostBtn.textContent = "Delete Post"
-    deleteBlogPostBtn.addEventListener("click", () => deleteBlogPost(blogPostId))
+    deleteBlogPostBtn.addEventListener("click", e => deleteBlogPost(e.target.parentElement.parentElement))
     deleteBlogPostBtn.setAttribute("class", "delete-blog-post-btn")
 
     // Wrap each element in desired rows
@@ -90,11 +85,10 @@ const addBlogPost = () => {
         return
     }
 
-    createBlogPost(getTitle, getContent, id)
-    id++
+    createBlogPost(getTitle, getContent)
 }
 
-const editTitle = (id) => {
+const editTitle = (target) => {
     // Prompt the user to edit their title
     const getEditedTitle = prompt("Edit your blog post title: ")
 
@@ -103,11 +97,12 @@ const editTitle = (id) => {
         return
     }
 
-    const titleToEdit = document.querySelector(`#${id} h3`)
+    // Target <li><div>
+    const titleToEdit = target.firstChild.firstChild
     titleToEdit.textContent = getEditedTitle
 }
 
-const editContent = (id) => {
+const editContent = (target) => {
     // Prompt the user to edit their content
     const getEditedContent = prompt("Edit your blog post content: ")
 
@@ -116,17 +111,16 @@ const editContent = (id) => {
         return
     }
 
-    const contentToEdit = document.querySelector(`#${id} p`)
+    const contentToEdit = target.childNodes[1].firstChild
     contentToEdit.textContent = getEditedContent
 }
 
-const deleteBlogPost = (id) => {
-    const blogPostToDelete = document.getElementById(id)
-    const title = document.querySelector(`#${id} h3`).textContent
+const deleteBlogPost = (target) => {
+    const title = target.firstChild.firstChild.textContent
     const confirmToDelete = confirm(`Are you sure you want to delete this blog post "${title}"?`)
 
     if (confirmToDelete) {
-        blogPostToDelete.remove()
+        target.remove()
         alert(`Blog post "${title}" has been deleted successfully.`)
     }
 }
